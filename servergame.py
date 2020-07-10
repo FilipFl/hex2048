@@ -1,7 +1,7 @@
 from cBoard import Board
 from server import Networking_server
 import xmlrpc
-
+from middles import middle
 
 class Game:
 

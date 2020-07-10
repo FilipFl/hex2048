@@ -1,5 +1,6 @@
 import xmlrpc
-from PySide2.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox, QLabel, QGraphicsScene, QGraphicsView, QMainWindow, QGraphicsPolygonItem, QGraphicsTextItem
+from PySide2.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox, QLabel, QGraphicsScene, QGraphicsView, \
+    QMainWindow, QGraphicsPolygonItem, QGraphicsTextItem
 from PySide2 import QtGui
 from PySide2.QtGui import QPainter, QBrush, QPen, QPolygonF, QPolygon, QFont, QPixmap
 from PySide2.QtCore import QPoint, Qt, QRectF, QPointF, QThreadPool, QRunnable, Slot, QObject, Signal, QElapsedTimer
