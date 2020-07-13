@@ -17,6 +17,9 @@ from cBoard import Board
 from cWorker import Worker
 from cField import Field
 from server import Networking_server
+import clientgame
+import hotseatgame
+import servergame
 
 # aby połączyć serwer z klientem należy najpierw w oknie serwera kliknąć "Nowa gra", a następnie w oknie klienta "Dołącz"
 # po wykonaniu w oknie serwera pierwszego ruchu w oknie klienta pojawi się plansza
@@ -34,8 +37,12 @@ class Window(QMainWindow):
         super().__init__()
         self.threadpool = QThreadPool()
         self.game = None
-        self.setButton("Nowa Gra!",self.start, offsetX-140, offsetY+600)
-        self.setButton("Wyjdz!", self.quiteApp, offsetX+60, offsetY+600)
+        self.startbutton = self.setButton("Nowa Gra!",self.start, offsetX-140, offsetY+600)
+        self.exitbutton = self.setButton("Wyjdz!", self.quiteApp, offsetX+60, offsetY+600)
+        self.startserverbutton = self.setButton("Host game", self.startserver, offsetX-140, offsetY+640, False)
+        self.startclientbutton = self.setButton("Join game", self.startclient, offsetX - 140, offsetY + 680, False)
+        self.starthotseatbutton = self.setButton("Start hotseat \n game", self.starthotseat, offsetX - 140, offsetY + 720, False)
+        self.gametype = None
         self.scene = QGraphicsScene()
         self.view = None
         self.processing = False
@@ -59,9 +66,9 @@ class Window(QMainWindow):
         self.setWindowTitle("2048 coronedition by Filip Flis - SERWER")
         self.view = QGraphicsView(self.scene,self)
         self.view.setGeometry(0,0,560,600)
-        self.setGeometry(300, 300, 560, 700)
+        self.setGeometry(300, 300, 560, 800)
         self.setMinimumWidth(560)
-        self.setMinimumHeight(700)
+        self.setMinimumHeight(800)
         self.view.update()
         self.view.show()
         self.show()
@@ -122,19 +129,53 @@ class Window(QMainWindow):
             self.view.show()
 
 
-    def setButton(self,msg,action,x,y):
+    def setButton(self,msg,action,x,y, visibility=True):
         btn1 = QPushButton(msg, self)
         btn1.move(x,y)
         btn1.clicked.connect(action)
+        btn1.setVisible(visibility)
+        return btn1
 
-    def start(self):
+
+    def hidebuttons(self):
+        self.startclientbutton.setVisible(False)
+        self.startserverbutton.setVisible(False)
+        self.starthotseatbutton.setVisible(False)
+
+    def showbuttons(self):
+        self.startbutton.setVisible(False)
+        self.startclientbutton.setVisible(True)
+        self.startserverbutton.setVisible(True)
+        self.starthotseatbutton.setVisible(True)
+
+
+    def startserver(self):
         self.broken = False
-        self.game = Game()
-        self.update_scene()
+        self.game = servergame.Game()
         self.game.connect()
+        self.gametype = "server"
+        self.hidebuttons()
         self.update_scene()
         self.update()
 
+    def start(self):
+        self.showbuttons()
+
+    def startclient(self):
+        self.broken = False
+        self.game = clientgame.Game()
+        self.gametype = "client"
+        self.hidebuttons()
+        self.update_scene()
+        self.update()
+
+    def starthotseat(self):
+        self.broken = False
+        self.game = hotseatgame.Game()
+        self.gametype = "hotseat"
+        self.hidebuttons()
+        self.update_scene()
+        self.update()
 
 
     def lets_process(self):
@@ -147,6 +188,7 @@ class Window(QMainWindow):
         if userInfo == QMessageBox.Yes:
             if self.game is not None:
                 self.game.send_exit()
+            self.threadpool = None
             myApp.exit()
         elif userInfo==QMessageBox.No:
             pass
@@ -156,14 +198,14 @@ class Window(QMainWindow):
             pressed = event.key()
             flag = False
             flag2 = False
-            if pressed == Qt.Key_P:
+            if pressed == Qt.Key_V:
                 if not self.replaying and self.game is not None:
                     flag2 = True
                     self.my_replay()
-            elif pressed == Qt.Key_O:
+            elif pressed == Qt.Key_B:
                 if self.game is not None:
                     self.game.dump_state()
-            elif pressed == Qt.Key_L:
+            elif pressed == Qt.Key_N:
                 flag2 = True
                 self.replay()
             elif pressed == Qt.Key_Q:
@@ -184,11 +226,23 @@ class Window(QMainWindow):
             elif pressed == Qt.Key_D:
                 if self.game.moveQT(6):
                     flag = True
+            elif pressed == Qt.Key_U and self.gametype == "hotseat":
+                self.game.moveQT(9)
+            elif pressed == Qt.Key_I and self.gametype == "hotseat":
+                self.game.moveQT(10)
+            elif pressed == Qt.Key_O and self.gametype == "hotseat":
+                self.game.moveQT(11)
+            elif pressed == Qt.Key_J and self.gametype == "hotseat":
+                self.game.moveQT(8)
+            elif pressed == Qt.Key_K and self.gametype == "hotseat":
+                self.game.moveQT(7)
+            elif pressed == Qt.Key_L and self.gametype == "hotseat":
+                self.game.moveQT(12)
             else:
                 self.update_scene()
                 pass
             self.update_scene()
-            if flag and not self.broken:
+            if flag and not self.broken and self.gametype == "server":
                 self.processing = True
                 self.update_scene()
                 worker = Worker(self.lets_process)

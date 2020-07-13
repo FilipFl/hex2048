@@ -1,6 +1,7 @@
 import random
 from middles import middle, offsetX, offsetY
 from cField import Field
+from cBlock import Block
 
 class Board:
     def __init__(self):
