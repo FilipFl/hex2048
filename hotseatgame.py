@@ -11,6 +11,9 @@ class Game:
         self.replay = []
         self.replay.append(self.create_state())
 
+    def getplayer(self):
+        return self.player_playing
+
     def is_done(self):
         return self.done
 

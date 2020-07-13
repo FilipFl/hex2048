@@ -1,6 +1,6 @@
 import xmlrpc
 from PySide2.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox, QLabel, QGraphicsScene, QGraphicsView, \
-    QMainWindow, QGraphicsPolygonItem, QGraphicsTextItem
+    QMainWindow, QGraphicsPolygonItem, QGraphicsTextItem, QLineEdit
 from PySide2 import QtGui
 from PySide2.QtGui import QPainter, QBrush, QPen, QPolygonF, QPolygon, QFont, QPixmap
 from PySide2.QtCore import QPoint, Qt, QRectF, QPointF, QThreadPool, QRunnable, Slot, QObject, Signal, QElapsedTimer
@@ -42,6 +42,11 @@ class Window(QMainWindow):
         self.startserverbutton = self.setButton("Host game", self.startserver, offsetX-140, offsetY+640, False)
         self.startclientbutton = self.setButton("Join game", self.startclient, offsetX - 140, offsetY + 680, False)
         self.starthotseatbutton = self.setButton("Start hotseat \n game", self.starthotseat, offsetX - 140, offsetY + 720, False)
+        self.textbox = QLineEdit(self)
+        self.textbox.move(offsetX-30 , offsetY + 685)
+        self.textbox.resize(100, 20)
+        self.textbox.setVisible(False)
+        self.show()
         self.gametype = None
         self.scene = QGraphicsScene()
         self.view = None
@@ -84,11 +89,16 @@ class Window(QMainWindow):
     def update_scene(self):
         text = ""
         if self.broken:
-            text = "Przeciwnik rozłączył się"
+            text = "Opponent disconected"
         elif self.processing:
-            text = "Ruch przeciwnika"
+            text = "Opponent's turn"
         else:
-            text = "Twój ruch"
+            text = "Your turn"
+        if self.gametype == "hotseat":
+            if self.game.getplayer() == 1:
+                text = "Player 1 moving"
+            else:
+                text = "Player 2 moving"
         if self.game is not None:
             self.scene.clear()
             size = 30
@@ -141,12 +151,16 @@ class Window(QMainWindow):
         self.startclientbutton.setVisible(False)
         self.startserverbutton.setVisible(False)
         self.starthotseatbutton.setVisible(False)
+        self.textbox.setText("")
+        self.textbox.setVisible(False)
 
     def showbuttons(self):
         self.startbutton.setVisible(False)
         self.startclientbutton.setVisible(True)
         self.startserverbutton.setVisible(True)
         self.starthotseatbutton.setVisible(True)
+        self.textbox.setVisible(True)
+
 
 
     def startserver(self):
@@ -163,11 +177,18 @@ class Window(QMainWindow):
 
     def startclient(self):
         self.broken = False
-        self.game = clientgame.Game()
-        self.gametype = "client"
-        self.hidebuttons()
-        self.update_scene()
-        self.update()
+        if self.checkip(self.textbox.text()):
+            self.game = clientgame.Game()
+            self.gametype = "client"
+            self.hidebuttons()
+            self.update_scene()
+            self.update()
+        else:
+            userInfo = QMessageBox()
+            userInfo.setWindowTitle("Error")
+            userInfo.setText("Wrong IP address")
+            userInfo.setStandardButtons(QMessageBox.Ok)
+            userInfo.exec_()
 
     def starthotseat(self):
         self.broken = False
@@ -177,6 +198,16 @@ class Window(QMainWindow):
         self.update_scene()
         self.update()
 
+    def checkip(self, ip):
+        if ip == "localhost":
+            return True
+        try:
+            parts = ip.split('.')
+            return len(parts) == 4 and all(0 <= int(part) < 256 for part in parts)
+        except ValueError:
+            return False
+        except (AttributeError, TypeError):
+            return False
 
     def lets_process(self):
         self.game.send_and_listen()
@@ -184,7 +215,7 @@ class Window(QMainWindow):
         return True
 
     def quiteApp(self):
-        userInfo = QMessageBox.question(self, "RLY?", "Chcesz wyjść?", QMessageBox.Yes | QMessageBox.No)
+        userInfo = QMessageBox.question(self, "Are You sure \n You want to quit?", QMessageBox.Yes | QMessageBox.No)
         if userInfo == QMessageBox.Yes:
             if self.game is not None:
                 self.game.send_exit()
@@ -243,6 +274,12 @@ class Window(QMainWindow):
                 pass
             self.update_scene()
             if flag and not self.broken and self.gametype == "server":
+                self.processing = True
+                self.update_scene()
+                worker = Worker(self.lets_process)
+                worker.signals.finished.connect(self.update_scene)
+                self.threadpool.start(worker)
+            if flag and not self.broken and self.gametype == "client":
                 self.processing = True
                 self.update_scene()
                 worker = Worker(self.lets_process)

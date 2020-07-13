@@ -4,11 +4,11 @@ import xmlrpc
 
 class Game:
 
-    def __init__(self):
+    def __init__(self, adress):
         self.playing_as = 2
         self.board = Board()
         self.done = False
-        self.client = Networking_client()
+        self.client = Networking_client(adress)
         data = self.client.listening()
         self.recreate_state(data)
         self.replay = []
