@@ -215,7 +215,7 @@ class Window(QMainWindow):
         return True
 
     def quiteApp(self):
-        userInfo = QMessageBox.question(self, "Are You sure \n You want to quit?", QMessageBox.Yes | QMessageBox.No)
+        userInfo = QMessageBox.question(self, "Quiting", "Are You sure You want to quit?", (QMessageBox.Yes | QMessageBox.No))
         if userInfo == QMessageBox.Yes:
             if self.game is not None:
                 self.game.send_exit()
