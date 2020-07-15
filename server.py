@@ -28,6 +28,8 @@ class Networking_server:
                 txt = data
                 if txt == "exit":
                     self.broken = True
+                elif txt == "endgame":
+                    return txt
                 data = eval(data)
                 return data
             except:

@@ -1,6 +1,8 @@
 from client import Networking_client
 from cBoard import Board
 import xmlrpc
+from middles import middle
+from PySide2.QtWidgets import QMessageBox
 
 class Game:
 
@@ -36,8 +38,22 @@ class Game:
         self.client.send(state)
         data = self.client.listening()
         if data:
-            self.recreate_state(data)
-            self.replay.append(data)
+            if data == "endgame":
+                userInfo = QMessageBox()
+                userInfo.setWindowTitle("FINISH!")
+                userInfo.setText("GAME ENDED!")
+                userInfo.setStandardButtons(QMessageBox.Ok)
+                userInfo.exec_()
+            else:
+                self.recreate_state(data)
+                self.replay.append(state)
+                checkresult = self.checkboth()
+                if checkresult is False:
+                    self.board.create_block(2)
+                    state = self.create_state()
+                    self.serwer.send(state)
+                elif checkresult == "endgame":
+                    self.serwer.send("endgame")
 
 
     def moveQT(self, click):
@@ -112,4 +128,38 @@ class Game:
         self.change_player()
 
     def get_block(self,x,y):
-        return self.board.get_field(x,y).get_block()
+        return self.board.get_field(x, y).get_block()
+
+    def checkturn(self):
+        remstate = self.create_state()
+        flag = False
+        for i in range(6):
+            if self.board.move_blocks(self.playing_as, i):
+                flag = True
+                self.recreate_state(remstate)
+        return flag
+
+    def checkenemyturn(self):
+        enemy = 1
+        if self.playing_as == 1:
+            enemy = 2
+        remstate = self.create_state()
+        flag = False
+        for i in range(6):
+            if self.board.move_blocks(enemy, i):
+                flag = True
+                self.recreate_state(remstate)
+        return flag
+
+    def checkboth(self):
+        thisturn = self.checkturn()
+        if not thisturn:
+            nextturn = self.checkenemyturn()
+            if not nextturn:
+                userInfo = QMessageBox()
+                userInfo.setWindowTitle("FINISH!")
+                userInfo.setText("GAME ENDED!")
+                userInfo.setStandardButtons(QMessageBox.Ok)
+                userInfo.exec_()
+                return "endgame"
+        return thisturn
