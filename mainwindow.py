@@ -178,7 +178,7 @@ class Window(QMainWindow):
     def startclient(self):
         self.broken = False
         if self.checkip(self.textbox.text()):
-            self.game = clientgame.Game()
+            self.game = clientgame.Game(self.textbox.text())
             self.gametype = "client"
             self.hidebuttons()
             self.update_scene()
