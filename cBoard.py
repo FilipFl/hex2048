@@ -136,3 +136,26 @@ class Board:
             return False, [x, y]
         return True, [x, y]
 
+    def check_score(self):
+        blocks1 = []
+        blocks2 = []
+        highest1 = 0
+        highest2 = 0
+        for column in self.map:
+            for field in column:
+                block = field.get_block()
+                if block != None:
+                    if block.get_player() == 1:
+                        blocks1.append(block)
+                    else:
+                        blocks2.append(block)
+        countblocks1 = len(blocks1)
+        countblocks2 = len(blocks2)
+        if countblocks2>0:
+            blocks1.sort(key=lambda x: x.get_value(), reverse=True)
+            blocks2.sort(key=lambda x: x.get_value(), reverse=True)
+            highest1 = blocks1[0].get_value()
+            highest2 = blocks2[0].get_value()
+            return [[highest1, countblocks1], [highest2, countblocks2]]
+        else:
+            return [[2,1], [0,0]]

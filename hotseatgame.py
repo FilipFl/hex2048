@@ -152,4 +152,6 @@ class Game:
                 self.recreate_state(remstate)
         return flag
 
+    def get_score(self):
+        return self.board.check_score()
 

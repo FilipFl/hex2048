@@ -152,3 +152,6 @@ class Game:
                 userInfo.exec_()
                 return "endgame"
         return thisturn
+
+    def get_score(self):
+        return self.board.check_score()

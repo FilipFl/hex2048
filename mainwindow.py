@@ -60,6 +60,7 @@ class Window(QMainWindow):
         self.iterator = 0
         self.replay_window = None
         self.replaying = False
+        self.worker = None
 
     def hex_corner(self, center, size, i):
         angle_deg = 60 * i
@@ -70,9 +71,9 @@ class Window(QMainWindow):
     def InitWindow(self):
         self.setWindowTitle("2048 coronedition by Filip Flis - SERWER")
         self.view = QGraphicsView(self.scene,self)
-        self.view.setGeometry(0,0,560,600)
-        self.setGeometry(300, 300, 560, 800)
-        self.setMinimumWidth(560)
+        self.view.setGeometry(0,0,offsetX*2+60,600)
+        self.setGeometry(100, 100, offsetX*2+60, 800)
+        self.setMinimumWidth(offsetX*2+60)
         self.setMinimumHeight(800)
         self.view.update()
         self.view.show()
@@ -104,6 +105,14 @@ class Window(QMainWindow):
             size = 30
             message = QGraphicsTextItem()
             message.setPlainText(text)
+            self.scene.addItem(message)
+            score = self.game.get_score()
+            text = "Player 1 score: {} \nPlayer 1 blocks: {}\n\nPlayer 2 score: {}\nPlayer 2 blocks: {}".format(
+                score[0][0], score[0][1], score[1][0], score[1][1]
+            )
+            message = QGraphicsTextItem()
+            message.setPlainText(text)
+            message.setPos(QPointF(0, offsetY+400))
             self.scene.addItem(message)
             for element in middle:
                 block = self.game.get_block(element[1][0],element[1][1])
@@ -217,9 +226,9 @@ class Window(QMainWindow):
     def quiteApp(self):
         userInfo = QMessageBox.question(self, "Quiting", "Are You sure You want to quit?", (QMessageBox.Yes | QMessageBox.No))
         if userInfo == QMessageBox.Yes:
-            if self.game is not None:
+            if self.game is not None and self.gametype != "hotseat":
                 self.game.send_exit()
-            self.threadpool = None
+            self.threadpool.cancel(self.worker)
             myApp.exit()
         elif userInfo==QMessageBox.No:
             pass
@@ -277,12 +286,14 @@ class Window(QMainWindow):
                 self.processing = True
                 self.update_scene()
                 worker = Worker(self.lets_process)
+                self.worker = worker
                 worker.signals.finished.connect(self.update_scene)
                 self.threadpool.start(worker)
             if flag and not self.broken and self.gametype == "client":
                 self.processing = True
                 self.update_scene()
                 worker = Worker(self.lets_process)
+                self.worker = worker
                 worker.signals.finished.connect(self.update_scene)
                 self.threadpool.start(worker)
             if flag2 and not self.replaying:
