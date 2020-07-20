@@ -48,8 +48,6 @@ The project is a variation over a classic "2048" game, but this time based on he
     <img src="https://github.com/FilipFl/hex2048/blob/master/readmestuff/screen3.png" alt="Screenshot">
 </p>
 
-## Code Example/Issues 🔍
-
 
 ## Installation 💾
 
