@@ -55,7 +55,7 @@ class Game:
                 elif checkresult == "endgame":
                     self.serwer.send("endgame")
 
-    def moveQT(self, click):
+    def move_qt(self, click):
         if click == 1:
             if self.board.move_blocks(self.playing_as, 0):
                 self.board.create_block(1)
