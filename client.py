@@ -1,11 +1,12 @@
 import socket
 
+
 class Networking_client:
 
-    def __init__(self, adress):
+    def __init__(self, address):
         self.connection = None
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_address = (adress, 10000)
+        self.server_address = (address, 10000)
         self.sock.connect(self.server_address)
 
     def send(self, message):

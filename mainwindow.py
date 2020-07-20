@@ -1,35 +1,15 @@
-import xmlrpc
-from PySide2.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox, QLabel, QGraphicsScene, QGraphicsView, \
+from PySide2.QtWidgets import QApplication, QPushButton, QMessageBox, QGraphicsScene, QGraphicsView,\
     QMainWindow, QGraphicsPolygonItem, QGraphicsTextItem, QLineEdit
-from PySide2 import QtGui
-from PySide2.QtGui import QPainter, QBrush, QPen, QPolygonF, QPolygon, QFont, QPixmap
-from PySide2.QtCore import QPoint, Qt, QRectF, QPointF, QThreadPool, QRunnable, Slot, QObject, Signal, QElapsedTimer
-import random
+from PySide2.QtGui import QBrush, QPen, QPolygonF, QFont
+from PySide2.QtCore import QPoint, Qt, QPointF, QThreadPool, QElapsedTimer
 import math
 import sys
-import os
-import socket
-import traceback
-from replaywindow import Replay, ReplayGame
+from replaywindow import Replay
 from middles import middle, offsetY, offsetX
-from cBlock import Block
-from cBoard import Board
 from cWorker import Worker
-from cField import Field
-from server import Networking_server
 import clientgame
 import hotseatgame
 import servergame
-
-# aby połączyć serwer z klientem należy najpierw w oknie serwera kliknąć "Nowa gra", a następnie w oknie klienta "Dołącz"
-# po wykonaniu w oknie serwera pierwszego ruchu w oknie klienta pojawi się plansza
-# pod przyciskiem O jest Zapisanie historii rozgrywki do pliku XML
-# pod przyciskiem P jest odtworzenie replay'a aktualnej rozgrywki
-# pod przyciskiem L jest odtworzenie replay'a rozgrywki z pliku xml
-
-
-
-
 
 
 class Window(QMainWindow):
@@ -37,11 +17,11 @@ class Window(QMainWindow):
         super().__init__()
         self.threadpool = QThreadPool()
         self.game = None
-        self.startbutton = self.setButton("Nowa Gra!",self.start, offsetX-140, offsetY+600)
-        self.exitbutton = self.setButton("Wyjdz!", self.quiteApp, offsetX+60, offsetY+600)
-        self.startserverbutton = self.setButton("Host game", self.startserver, offsetX-140, offsetY+640, False)
-        self.startclientbutton = self.setButton("Join game", self.startclient, offsetX - 140, offsetY + 680, False)
-        self.starthotseatbutton = self.setButton("Start hotseat \n game", self.starthotseat, offsetX - 140, offsetY + 720, False)
+        self.startbutton = self.set_button("Nowa Gra!", self.start, offsetX - 140, offsetY + 600)
+        self.exitbutton = self.set_button("Wyjdz!", self.quit_app, offsetX + 60, offsetY + 600)
+        self.startserverbutton = self.set_button("Host game", self.start_server, offsetX - 140, offsetY + 640, False)
+        self.startclientbutton = self.set_button("Join game", self.start_client, offsetX - 140, offsetY + 680, False)
+        self.starthotseatbutton = self.set_button("Start hotseat \n game", self.start_hot_seat, offsetX - 140, offsetY + 720, False)
         self.textbox = QLineEdit(self)
         self.textbox.move(offsetX-30 , offsetY + 685)
         self.textbox.resize(100, 20)
@@ -52,7 +32,7 @@ class Window(QMainWindow):
         self.view = None
         self.processing = False
         self.broken = False
-        self.InitWindow()
+        self.init_window()
         self.timer = QElapsedTimer()
         self.history = None
         self.seconds = 0
@@ -68,7 +48,7 @@ class Window(QMainWindow):
         return QPoint(center[0] + size * math.cos(angle_rad),
                       center[1] + size * math.sin(angle_rad))
 
-    def InitWindow(self):
+    def init_window(self):
         self.setWindowTitle("2048 coronedition by Filip Flis - SERWER")
         self.view = QGraphicsView(self.scene,self)
         self.view.setGeometry(0,0,offsetX*2+60,600)
@@ -96,7 +76,7 @@ class Window(QMainWindow):
         else:
             text = "Your turn"
         if self.gametype == "hotseat":
-            if self.game.getplayer() == 1:
+            if self.game.get_player() == 1:
                 text = "Player 1 moving"
             else:
                 text = "Player 2 moving"
@@ -147,49 +127,45 @@ class Window(QMainWindow):
             self.view.update()
             self.view.show()
 
-
-    def setButton(self,msg,action,x,y, visibility=True):
+    def set_button(self, msg, action, x, y, visibility=True):
         btn1 = QPushButton(msg, self)
         btn1.move(x,y)
         btn1.clicked.connect(action)
         btn1.setVisible(visibility)
         return btn1
 
-
-    def hidebuttons(self):
+    def hide_buttons(self):
         self.startclientbutton.setVisible(False)
         self.startserverbutton.setVisible(False)
         self.starthotseatbutton.setVisible(False)
         self.textbox.setText("")
         self.textbox.setVisible(False)
 
-    def showbuttons(self):
+    def show_buttons(self):
         self.startbutton.setVisible(False)
         self.startclientbutton.setVisible(True)
         self.startserverbutton.setVisible(True)
         self.starthotseatbutton.setVisible(True)
         self.textbox.setVisible(True)
 
-
-
-    def startserver(self):
+    def start_server(self):
         self.broken = False
         self.game = servergame.Game()
         self.game.connect()
         self.gametype = "server"
-        self.hidebuttons()
+        self.hide_buttons()
         self.update_scene()
         self.update()
 
     def start(self):
-        self.showbuttons()
+        self.show_buttons()
 
-    def startclient(self):
+    def start_client(self):
         self.broken = False
-        if self.checkip(self.textbox.text()):
+        if self.check_ip(self.textbox.text()):
             self.game = clientgame.Game(self.textbox.text())
             self.gametype = "client"
-            self.hidebuttons()
+            self.hide_buttons()
             self.update_scene()
             self.update()
         else:
@@ -199,15 +175,15 @@ class Window(QMainWindow):
             userInfo.setStandardButtons(QMessageBox.Ok)
             userInfo.exec_()
 
-    def starthotseat(self):
+    def start_hot_seat(self):
         self.broken = False
         self.game = hotseatgame.Game()
         self.gametype = "hotseat"
-        self.hidebuttons()
+        self.hide_buttons()
         self.update_scene()
         self.update()
 
-    def checkip(self, ip):
+    def check_ip(self, ip):
         if ip == "localhost":
             return True
         try:
@@ -223,7 +199,7 @@ class Window(QMainWindow):
         self.processing = False
         return True
 
-    def quiteApp(self):
+    def quit_app(self):
         userInfo = QMessageBox.question(self, "Quiting", "Are You sure You want to quit?", (QMessageBox.Yes | QMessageBox.No))
         if userInfo == QMessageBox.Yes:
             if self.game is not None and self.gametype != "hotseat":
@@ -249,35 +225,35 @@ class Window(QMainWindow):
                 flag2 = True
                 self.replay()
             elif pressed == Qt.Key_Q:
-                if self.game.moveQT(3):
+                if self.game.move_qt(3):
                     flag = True
             elif pressed == Qt.Key_W:
-                if self.game.moveQT(4):
+                if self.game.move_qt(4):
                     flag = True
             elif pressed == Qt.Key_E:
-                if self.game.moveQT(5):
+                if self.game.move_qt(5):
                     flag = True
             elif pressed == Qt.Key_A:
-                if self.game.moveQT(2):
+                if self.game.move_qt(2):
                     flag = True
             elif pressed == Qt.Key_S:
-                if self.game.moveQT(1):
+                if self.game.move_qt(1):
                     flag = True
             elif pressed == Qt.Key_D:
-                if self.game.moveQT(6):
+                if self.game.move_qt(6):
                     flag = True
             elif pressed == Qt.Key_U and self.gametype == "hotseat":
-                self.game.moveQT(9)
+                self.game.move_qt(9)
             elif pressed == Qt.Key_I and self.gametype == "hotseat":
-                self.game.moveQT(10)
+                self.game.move_qt(10)
             elif pressed == Qt.Key_O and self.gametype == "hotseat":
-                self.game.moveQT(11)
+                self.game.move_qt(11)
             elif pressed == Qt.Key_J and self.gametype == "hotseat":
-                self.game.moveQT(8)
+                self.game.move_qt(8)
             elif pressed == Qt.Key_K and self.gametype == "hotseat":
-                self.game.moveQT(7)
+                self.game.move_qt(7)
             elif pressed == Qt.Key_L and self.gametype == "hotseat":
-                self.game.moveQT(12)
+                self.game.move_qt(12)
             else:
                 self.update_scene()
                 pass
@@ -307,6 +283,9 @@ class Window(QMainWindow):
         self.iterator = -1
         self.timer.restart()
         while self.timer.elapsed() < self.seconds:
+            if not self.replay_window.isVisible():
+                self.replaying = False
+                break
             self.count = self.timer.elapsed()/2000
             if self.iterator < self.count:
                 self.iterator += 1
@@ -317,16 +296,6 @@ class Window(QMainWindow):
                 self.replay_window.update()
         self.replaying = False
         return True
-
-    def load_replay(self):
-        file = open("history.xml", "r")
-        readed = file.read()
-        file.close()
-        readed = xmlrpc.client.loads(readed)
-        tab = list(readed)
-        proba = list(tab[0])
-        return proba
-
 
 
 if __name__ == '__main__':

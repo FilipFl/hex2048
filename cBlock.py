@@ -28,18 +28,11 @@ class Block:
         return self.y_pos
 
     def value_to_string(self):
-        # funkcja do printowania wartości
         s = ''
         s += str(self.value)
         return s
 
-    def get_adress_to_move(self, dir):
-        # 0 - w dół
-        # 1 - lewo dół
-        # 2 - lewo góra
-        # 3 - góra
-        # 4 - prawo góra
-        # 5 - prawo dół
+    def get_address_to_move(self, dir):
         directions = []
         if self.x_pos < 4:
             directions = [[0, +1], [-1, 0], [-1, -1], [0, -1], [+1, 0], [+1, +1]]

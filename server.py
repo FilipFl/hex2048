@@ -1,5 +1,6 @@
 import socket
 
+
 class Networking_server:
     def __init__(self):
         self.connection = None

@@ -137,7 +137,7 @@ class Board:
             nothing_changed = True
             for item in blocks:
                 old = item.get_coords()
-                possible, new_coords = item.get_adress_to_move(dir)
+                possible, new_coords = item.get_address_to_move(dir)
                 if possible:
                     existing = self.get_field(new_coords[0], new_coords[1]).get_block()
                     if existing is not None:
@@ -500,22 +500,22 @@ class Window(QMainWindow):
                 flag2 = True
                 self.replay()
             elif pressed == Qt.Key_Q:
-                if self.game.moveQT(3):
+                if self.game.move_qt(3):
                     flag = True
             elif pressed == Qt.Key_W:
-                if self.game.moveQT(4):
+                if self.game.move_qt(4):
                     flag = True
             elif pressed == Qt.Key_E:
-                if self.game.moveQT(5):
+                if self.game.move_qt(5):
                     flag = True
             elif pressed == Qt.Key_A:
-                if self.game.moveQT(2):
+                if self.game.move_qt(2):
                     flag = True
             elif pressed == Qt.Key_S:
-                if self.game.moveQT(1):
+                if self.game.move_qt(1):
                     flag = True
             elif pressed == Qt.Key_D:
-                if self.game.moveQT(6):
+                if self.game.move_qt(6):
                     flag = True
             else:
                 self.update_scene()

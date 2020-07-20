@@ -5,9 +5,9 @@ from cBoard import Board
 from middles import middle, offsetX, offsetY
 import math
 
+
 class ReplayGame:
     def __init__(self):
-        self.playing_as = 2
         self.board = Board()
 
     def recreate_state(self, state):
@@ -16,8 +16,6 @@ class ReplayGame:
 
     def get_block(self,x,y):
         return self.board.get_field(x,y).get_block()
-
-
 
 
 class Replay(QWidget):
@@ -29,11 +27,9 @@ class Replay(QWidget):
         self.update()
         self.show()
 
-
     def recreate(self, state):
         self.game.recreate_state(state)
         self.update()
-
 
     def hex_corner(self, center, size, i):
         angle_deg = 60 * i

@@ -1,16 +1,15 @@
 from client import Networking_client
 from cBoard import Board
-import xmlrpc
 from middles import middle
 from PySide2.QtWidgets import QMessageBox
 
-class Game:
 
-    def __init__(self, adress):
+class Game:
+    def __init__(self, address):
         self.playing_as = 2
         self.board = Board()
         self.done = False
-        self.client = Networking_client(adress)
+        self.client = Networking_client(address)
         data = self.client.listening()
         self.recreate_state(data)
         self.replay = []
@@ -46,40 +45,46 @@ class Game:
                 userInfo.exec_()
             else:
                 self.recreate_state(data)
-                self.replay.append(state)
-                checkresult = self.checkboth()
+                self.replay.append(data)
+                checkresult = self.check_both()
                 if checkresult is False:
                     self.board.create_block(2)
                     state = self.create_state()
+                    self.replay.append(state)
                     self.serwer.send(state)
                 elif checkresult == "endgame":
                     self.serwer.send("endgame")
-
 
     def moveQT(self, click):
         if click == 1:
             if self.board.move_blocks(self.playing_as, 0):
                 self.board.create_block(1)
+                self.replay.append(self.create_state())
                 return True
         elif click == 2:
             if self.board.move_blocks(self.playing_as, 1):
                 self.board.create_block(1)
+                self.replay.append(self.create_state())
                 return True
         elif click == 3:
             if self.board.move_blocks(self.playing_as, 2):
                 self.board.create_block(1)
+                self.replay.append(self.create_state())
                 return True
         elif click == 4:
             if self.board.move_blocks(self.playing_as, 3):
                 self.board.create_block(1)
+                self.replay.append(self.create_state())
                 return True
         elif click == 5:
             if self.board.move_blocks(self.playing_as, 4):
                 self.board.create_block(1)
+                self.replay.append(self.create_state())
                 return True
         elif click == 6:
             if self.board.move_blocks(self.playing_as, 5):
                 self.board.create_block(1)
+                self.replay.append(self.create_state())
                 return True
         else:
             return False
@@ -102,25 +107,8 @@ class Game:
         self.board = Board()
         self.board.recreate_map(state)
 
-    def dump_state(self):
-        test = xmlrpc.client.dumps(tuple(self.replay))
-        file = open("history.xml","w+")
-        file.write(test)
-        file.close()
-
-
-    def load_replay(self):
-        file = open("history.xml", "r")
-        readed = file.read()
-        file.close()
-        readed = xmlrpc.client.loads(readed)
-        tab = list(readed)
-        proba = list(tab[0])
-        return proba
-
     def get_replay(self):
         return self.replay
-
 
     def main_game(self):
         self.board.create_block(self.player_playing)
@@ -130,7 +118,7 @@ class Game:
     def get_block(self,x,y):
         return self.board.get_field(x, y).get_block()
 
-    def checkturn(self):
+    def check_turn(self):
         remstate = self.create_state()
         flag = False
         for i in range(6):
@@ -139,7 +127,7 @@ class Game:
                 self.recreate_state(remstate)
         return flag
 
-    def checkenemyturn(self):
+    def check_enemy_turn(self):
         enemy = 1
         if self.playing_as == 1:
             enemy = 2
@@ -151,10 +139,10 @@ class Game:
                 self.recreate_state(remstate)
         return flag
 
-    def checkboth(self):
-        thisturn = self.checkturn()
+    def check_both(self):
+        thisturn = self.check_turn()
         if not thisturn:
-            nextturn = self.checkenemyturn()
+            nextturn = self.check_enemy_turn()
             if not nextturn:
                 userInfo = QMessageBox()
                 userInfo.setWindowTitle("FINISH!")

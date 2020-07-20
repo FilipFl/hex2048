@@ -1,44 +1,43 @@
 import random
-from middles import middle, offsetX, offsetY
+from middles import middle
 from cField import Field
-from cBlock import Block
+
 
 class Board:
     def __init__(self):
         self.map = []
-        for i in range(0,9):
+        for i in range(0, 9):
             row = []
-            if i==0 or i==8:
-                for j in range(0,5):
+            if i == 0 or i == 8:
+                for j in range(0, 5):
                     f = Field(i, j)
                     row.append(f)
-            if i==1 or i==7:
-                for j in range(0,6):
-                    f = Field(i,j)
+            if i == 1 or i == 7:
+                for j in range(0, 6):
+                    f = Field(i, j)
                     row.append(f)
-            if i==2 or i==6:
-                for j in range(0,7):
-                    f = Field(i,j)
+            if i == 2 or i == 6:
+                for j in range(0, 7):
+                    f = Field(i, j)
                     row.append(f)
-            if i==3 or i==5:
-                for j in range(0,8):
-                    f = Field(i,j)
+            if i == 3 or i == 5:
+                for j in range(0, 8):
+                    f = Field(i, j)
                     row.append(f)
             else:
-                for j in range(0,9):
-                    f= Field(i,j)
+                for j in range(0, 9):
+                    f = Field(i, j)
                     row.append(f)
             self.map.append(row)
 
-    def get_field(self,x,y):
+    def get_field(self, x, y):
         return self.map[x][y]
 
     def recreate_map(self, state):
         for element in state:
-            field = self.get_field(element[0],element[1])
+            field = self.get_field(element[0], element[1])
             if element[2] != 0:
                 field.make_block(element[2], element[3])
-    # metoda co runde tworząca klocek aktualnie grającego gracza
 
     def create_block(self, player):
         count = 0
@@ -53,9 +52,9 @@ class Board:
             while not done:
                 x = random.randint(0, 9)
                 y = random.randint(0, 9)
-                status, ble = self.check_bound(x,y)
+                status, ble = self.check_bound(x, y)
                 if status:
-                    possible = self.get_field(x,y).get_block()
+                    possible = self.get_field(x, y).get_block()
                     if possible is None:
                         self.get_field(x, y).make_block(player)
                         done = True
@@ -74,7 +73,7 @@ class Board:
             game_state.append(field)
         return game_state
 
-    def move_blocks(self,player, dir):
+    def move_blocks(self, player, dir):
         blocks = []
         iterations = -1
         old_state = self.create_state()
@@ -84,10 +83,8 @@ class Board:
                 if block != None:
                     if block.get_player() == player:
                         blocks.append(block)
-        # przesuwanie każdego klocka po kolei, aż nic się nie będzie zmieniać na planszy
         nothing_changed = False
         while not nothing_changed:
-            # określenie które klocki powinny poruszać się najpierw, w zależności jaki kierunek ruchu
             if dir == 0:
                 blocks.sort(key=lambda x: x.get_y(), reverse=True)
             if dir == 3:
@@ -104,7 +101,7 @@ class Board:
             for item in blocks:
                 iterations += 1
                 old = item.get_coords()
-                possible, new_coords = item.get_adress_to_move(dir)
+                possible, new_coords = item.get_address_to_move(dir)
                 if possible:
                     existing = self.get_field(new_coords[0], new_coords[1]).get_block()
                     if existing is not None:
@@ -115,17 +112,15 @@ class Board:
                             nothing_changed = False
                     else:
                         item.set_coords(new_coords)
-                        self.get_field(new_coords[0],new_coords[1]).asign_block(item)
+                        self.get_field(new_coords[0], new_coords[1]).asign_block(item)
                         self.get_field(old[0], old[1]).del_block()
                         nothing_changed = False
-        #sprawdzenie czy cokolwiek się zmieniło jeśli nie, ruch niepoprawny
         new_state = self.create_state()
         if old_state == new_state:
             return False
         else:
             return True
 
-    # sprawdzenie czy współrzędne znajdują się na mapie
     def check_bound(self, x, y):
         if x < 0 or y < 0 or x > 8:
             return False, [x, y]
@@ -151,11 +146,11 @@ class Board:
                         blocks2.append(block)
         countblocks1 = len(blocks1)
         countblocks2 = len(blocks2)
-        if countblocks2>0:
+        if countblocks2 > 0:
             blocks1.sort(key=lambda x: x.get_value(), reverse=True)
             blocks2.sort(key=lambda x: x.get_value(), reverse=True)
             highest1 = blocks1[0].get_value()
             highest2 = blocks2[0].get_value()
             return [[highest1, countblocks1], [highest2, countblocks2]]
         else:
-            return [[2,1], [0,0]]
+            return [[2, 1], [0, 0]]
