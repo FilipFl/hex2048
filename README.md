@@ -55,5 +55,5 @@ In Your virtual environment type "pip install PySide2". In the virtual env direc
 
 
 ## Live 📍
-https://drive.google.com/file/d/1QINBltPey8rRIgcXhUYEY_seo5ee1n_R/view?usp=sharing
+https://drive.google.com/file/d/1WAtlm-rI4Boms-mV6r8i4XmYTP-rUuD2/view?usp=sharing
 
