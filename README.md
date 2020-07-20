@@ -27,9 +27,9 @@ The project is a variation over a classic "2048" game, but this time based on he
 
 | Tech                                                    | Description                              |
 | ------------------------------------------------------- | ---------------------------------------- |
-| [PySide2](X)                           | Module used for UI design along with a little of threading support   |
-| [socket](X)                           | module used for basic LAN networking    |
-| [Python 3.7](X)                           | Main Language   |
+| PySide2                           | Module used for UI design along with a little of threading support   |
+| socket                           | module used for basic LAN networking    |
+| Python 3.7                           | Main Language   |
 
 
 
