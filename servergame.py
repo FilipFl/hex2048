@@ -1,5 +1,5 @@
 from cBoard import Board
-from server import Networking_server
+from server import NetworkingServer
 from middles import middle
 from PySide2.QtWidgets import QMessageBox
 
@@ -15,7 +15,7 @@ class Game:
         self.replay.append(self.create_state())
 
     def connect(self):
-        self.serwer = Networking_server()
+        self.serwer = NetworkingServer()
 
     def send_exit(self):
         self.serwer.send("exit")

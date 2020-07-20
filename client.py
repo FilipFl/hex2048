@@ -1,7 +1,7 @@
 import socket
 
 
-class Networking_client:
+class NetworkingClient:
 
     def __init__(self, address):
         self.connection = None

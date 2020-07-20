@@ -11,7 +11,7 @@ import sys
 import os
 import socket
 import xmlrpc.client
-from client import Networking_client
+from client import NetworkingClient
 
 class WorkerSignals(QObject):
     finished = Signal()

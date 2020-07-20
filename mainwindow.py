@@ -49,7 +49,7 @@ class Window(QMainWindow):
                       center[1] + size * math.sin(angle_rad))
 
     def init_window(self):
-        self.setWindowTitle("2048 coronedition by Filip Flis - SERWER")
+        self.setWindowTitle("Hexagonal 2048 by FF")
         self.view = QGraphicsView(self.scene,self)
         self.view.setGeometry(0,0,offsetX*2+60,600)
         self.setGeometry(100, 100, offsetX*2+60, 800)
@@ -200,7 +200,7 @@ class Window(QMainWindow):
         return True
 
     def quit_app(self):
-        userInfo = QMessageBox.question(self, "Quiting", "Are You sure You want to quit?", (QMessageBox.Yes | QMessageBox.No))
+        userInfo = QMessageBox.question(self, "Quiting", "Do You want to quit?", (QMessageBox.Yes | QMessageBox.No))
         if userInfo == QMessageBox.Yes:
             if self.game is not None and self.gametype != "hotseat":
                 self.game.send_exit()

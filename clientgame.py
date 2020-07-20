@@ -1,4 +1,4 @@
-from client import Networking_client
+from client import NetworkingClient
 from cBoard import Board
 from middles import middle
 from PySide2.QtWidgets import QMessageBox
@@ -9,7 +9,7 @@ class Game:
         self.playing_as = 2
         self.board = Board()
         self.done = False
-        self.client = Networking_client(address)
+        self.client = NetworkingClient(address)
         data = self.client.listening()
         self.recreate_state(data)
         self.replay = []
