@@ -55,5 +55,5 @@ Clone the repository. In Your virtual environment type "pip install PySide2". Wh
 
 
 ## Live 📍
-https://drive.google.com/file/d/1WAtlm-rI4Boms-mV6r8i4XmYTP-rUuD2/view?usp=sharing
+https://drive.google.com/drive/folders/1jGSq-HBQ6OM4F04G1kp1ToL2n8nJWRnG?usp=sharing
 
