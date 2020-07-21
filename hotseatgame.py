@@ -148,9 +148,6 @@ class Game:
                 userInfo.setStandardButtons(QMessageBox.Ok)
                 userInfo.exec_()
 
-    def main_game(self):
-        self.board.create_block(self.player_playing)
-        self.change_player()
 
     def get_block(self,x,y):
         return self.board.get_field(x,y).get_block()

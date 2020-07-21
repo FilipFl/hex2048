@@ -10,6 +10,7 @@ from cWorker import Worker
 import clientgame
 import hotseatgame
 import servergame
+import infowindow
 
 
 class Window(QMainWindow):
@@ -17,13 +18,14 @@ class Window(QMainWindow):
         super().__init__()
         self.threadpool = QThreadPool()
         self.game = None
-        self.startbutton = self.set_button("Nowa Gra!", self.start, offsetX - 140, offsetY + 600)
-        self.exitbutton = self.set_button("Wyjdz!", self.quit_app, offsetX + 60, offsetY + 600)
-        self.startserverbutton = self.set_button("Host game", self.start_server, offsetX - 140, offsetY + 640, False)
-        self.startclientbutton = self.set_button("Join game", self.start_client, offsetX - 140, offsetY + 680, False)
-        self.starthotseatbutton = self.set_button("Start hotseat \n game", self.start_hot_seat, offsetX - 140, offsetY + 720, False)
+        self.startbutton = self.set_button("New Game", self.start, offsetX - 140, offsetY + 600)
+        self.exitbutton = self.set_button("Quit", self.quit_app, offsetX - 140, offsetY + 680)
+        self.startserverbutton = self.set_button("Host game", self.start_server, offsetX + 60, offsetY + 600, False)
+        self.startclientbutton = self.set_button("Join game", self.start_client, offsetX + 60, offsetY + 640, False)
+        self.starthotseatbutton = self.set_button("Start hotseat \n game", self.start_hot_seat, offsetX + 60, offsetY + 680, False)
+        self.infobutton = self.set_button("Info", self.show_info, offsetX - 140, offsetY+640)
         self.textbox = QLineEdit(self)
-        self.textbox.move(offsetX-30 , offsetY + 685)
+        self.textbox.move(offsetX+170, offsetY + 645)
         self.textbox.resize(100, 20)
         self.textbox.setVisible(False)
         self.show()
@@ -41,6 +43,7 @@ class Window(QMainWindow):
         self.replay_window = None
         self.replaying = False
         self.worker = None
+        self.info = None
 
     def hex_corner(self, center, size, i):
         angle_deg = 60 * i
@@ -50,9 +53,9 @@ class Window(QMainWindow):
 
     def init_window(self):
         self.setWindowTitle("Hexagonal 2048 by FF")
+        self.setGeometry(100, 100, offsetX*2+60, 800)
         self.view = QGraphicsView(self.scene,self)
         self.view.setGeometry(0,0,offsetX*2+60,600)
-        self.setGeometry(100, 100, offsetX*2+60, 800)
         self.setMinimumWidth(offsetX*2+60)
         self.setMinimumHeight(800)
         self.view.update()
@@ -142,7 +145,6 @@ class Window(QMainWindow):
         self.textbox.setVisible(False)
 
     def show_buttons(self):
-        self.startbutton.setVisible(False)
         self.startclientbutton.setVisible(True)
         self.startserverbutton.setVisible(True)
         self.starthotseatbutton.setVisible(True)
@@ -182,6 +184,9 @@ class Window(QMainWindow):
         self.hide_buttons()
         self.update_scene()
         self.update()
+
+    def show_info(self):
+        self.info = infowindow.InfoWindow()
 
     def check_ip(self, ip):
         if ip == "localhost":

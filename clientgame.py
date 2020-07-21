@@ -110,12 +110,8 @@ class Game:
     def get_replay(self):
         return self.replay
 
-    def main_game(self):
-        self.board.create_block(self.player_playing)
-        self.move()
-        self.change_player()
 
-    def get_block(self,x,y):
+    def get_block(self, x, y):
         return self.board.get_field(x, y).get_block()
 
     def check_turn(self):
