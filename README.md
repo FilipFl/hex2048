@@ -51,9 +51,9 @@ The project is a variation over a classic "2048" game, but this time based on he
 
 ## Installation 💾
 
-Clone the repository. In Your virtual environment type "pip install PySide2". While in the vritual env go to repo directory and start "mainwindow.py", You're ready to play! ;)
+Clone the repository. In Your virtual environment type "pip install PySide2". While in the virtual env go to repo directory and start "mainwindow.py", You're ready to play! ;)
 
 
 ## Live 📍
-https://drive.google.com/file/d/1WAtlm-rI4Boms-mV6r8i4XmYTP-rUuD2/view?usp=sharing
+https://drive.google.com/drive/folders/1jGSq-HBQ6OM4F04G1kp1ToL2n8nJWRnG?usp=sharing
 
