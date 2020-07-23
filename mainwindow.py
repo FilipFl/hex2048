@@ -77,6 +77,8 @@ class Window(QMainWindow):
         text = ""
         if self.broken:
             text = "Opponent disconected"
+        elif self.processing and self.gametype == "ai":
+            text = "AI turn"
         elif self.processing:
             text = "Opponent's turn"
         else:
@@ -219,8 +221,7 @@ class Window(QMainWindow):
 
     def lets_wait(self):
         self.timer.start()
-        self.game.move_ai()
-        while self.timer.elapsed() < 2000:
+        while self.timer.elapsed() < 3000:
             pass
         self.processing = False
         return True
@@ -228,7 +229,7 @@ class Window(QMainWindow):
     def quit_app(self):
         userInfo = QMessageBox.question(self, "Quiting", "Do You want to quit?", (QMessageBox.Yes | QMessageBox.No))
         if userInfo == QMessageBox.Yes:
-            if self.game is not None and self.gametype != "hotseat":
+            if self.game is not None and self.gametype != "hotseat" and self.gametype != "ai":
                 self.game.send_exit()
             self.threadpool.cancel(self.worker)
             myApp.exit()
@@ -303,12 +304,16 @@ class Window(QMainWindow):
                 self.processing = True
                 worker = Worker(self.lets_wait)
                 self.worker = worker
-                worker.signals.finished.connect(self.update_scene)
+                worker.signals.finished.connect(self.update_ai)
                 self.threadpool.start(worker)
             if flag2 and not self.replaying:
                 self.replaying = True
                 worker = Worker(self.play_replay)
                 self.threadpool.start(worker)
+
+    def update_ai(self):
+        self.game.move_ai()
+        self.update_scene()
 
     def play_replay(self):
         self.seconds = len(self.history)*2000
