@@ -11,6 +11,7 @@ import clientgame
 import hotseatgame
 import servergame
 import infowindow
+import aigame
 
 
 class Window(QMainWindow):
@@ -23,6 +24,7 @@ class Window(QMainWindow):
         self.startserverbutton = self.set_button("Host game", self.start_server, offsetX + 60, offsetY + 600, False)
         self.startclientbutton = self.set_button("Join game", self.start_client, offsetX + 60, offsetY + 640, False)
         self.starthotseatbutton = self.set_button("Start hotseat \n game", self.start_hot_seat, offsetX + 60, offsetY + 680, False)
+        self.startaibutton = self.set_button("Start AI game", self.start_ai, offsetX + 60, offsetY + 720, False)
         self.infobutton = self.set_button("Info", self.show_info, offsetX - 140, offsetY+640)
         self.textbox = QLineEdit(self)
         self.textbox.move(offsetX+170, offsetY + 645)
@@ -44,6 +46,7 @@ class Window(QMainWindow):
         self.replaying = False
         self.worker = None
         self.info = None
+        self.timer = QElapsedTimer()
 
     def hex_corner(self, center, size, i):
         angle_deg = 60 * i
@@ -141,13 +144,16 @@ class Window(QMainWindow):
         self.startclientbutton.setVisible(False)
         self.startserverbutton.setVisible(False)
         self.starthotseatbutton.setVisible(False)
+        self.startaibutton.setVisible(False)
         self.textbox.setText("")
         self.textbox.setVisible(False)
+
 
     def show_buttons(self):
         self.startclientbutton.setVisible(True)
         self.startserverbutton.setVisible(True)
         self.starthotseatbutton.setVisible(True)
+        self.startaibutton.setVisible(True)
         self.textbox.setVisible(True)
 
     def start_server(self):
@@ -185,6 +191,13 @@ class Window(QMainWindow):
         self.update_scene()
         self.update()
 
+    def start_ai(self):
+        self.game = aigame.Game()
+        self.gametype = "ai"
+        self.hide_buttons()
+        self.update_scene()
+        self.update()
+
     def show_info(self):
         self.info = infowindow.InfoWindow()
 
@@ -201,6 +214,14 @@ class Window(QMainWindow):
 
     def lets_process(self):
         self.game.send_and_listen()
+        self.processing = False
+        return True
+
+    def lets_wait(self):
+        self.timer.start()
+        self.game.move_ai()
+        while self.timer.elapsed() < 2000:
+            pass
         self.processing = False
         return True
 
@@ -274,6 +295,13 @@ class Window(QMainWindow):
                 self.processing = True
                 self.update_scene()
                 worker = Worker(self.lets_process)
+                self.worker = worker
+                worker.signals.finished.connect(self.update_scene)
+                self.threadpool.start(worker)
+            if flag and self.gametype == "ai":
+                self.update_scene()
+                self.processing = True
+                worker = Worker(self.lets_wait)
                 self.worker = worker
                 worker.signals.finished.connect(self.update_scene)
                 self.threadpool.start(worker)
