@@ -1,6 +1,6 @@
 from PySide2.QtWidgets import QApplication, QPushButton, QMessageBox, QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, \
     QMainWindow, QGraphicsPolygonItem, QGraphicsTextItem, QLineEdit
-from PySide2.QtGui import QBrush, QPen, QPolygonF, QFont, QPixmap, QColor
+from PySide2.QtGui import QBrush, QPen, QPolygonF, QFont, QPixmap, QColor, QPainter
 from PySide2.QtCore import QPoint, Qt, QPointF, QThreadPool, QElapsedTimer
 import math
 import sys
@@ -37,7 +37,8 @@ class Window(QMainWindow):
         self.view = None
         self.processing = False
         self.broken = False
-        self.init_window()
+        self.path_to_graphics = "graphics/"
+        self.init_window(self.path_to_graphics)
         self.timer = QElapsedTimer()
         self.history = None
         self.seconds = 0
@@ -50,13 +51,14 @@ class Window(QMainWindow):
         self.timer = QElapsedTimer()
 
 
+
     def hex_corner(self, center, size, i):
         angle_deg = 60 * i
         angle_rad = math.pi / 180 * angle_deg
         return QPoint(center[0] + size * math.cos(angle_rad),
                       center[1] + size * math.sin(angle_rad))
 
-    def init_window(self):
+    def init_window(self,path):
         self.setWindowTitle("Hexagonal 2048 by FF")
         self.setGeometry(100, 100, offsetX*2, 800)
         self.scene.setSceneRect(0,0,offsetX*2,600)
@@ -69,9 +71,7 @@ class Window(QMainWindow):
         self.setMinimumHeight(800)
         self.setMaximumHeight(800)
         self.setMaximumWidth(offsetX*2)
-        background = QGraphicsPixmapItem("background2.jpg")
-        background.setRotation(90)
-        self.scene.setBackgroundBrush(QBrush(QPixmap("background2.jpg")))
+        self.scene.setBackgroundBrush(QBrush(QPixmap(path+"background3top.jpg")))
         self.view.update()
         self.view.show()
         self.show()
@@ -101,7 +101,7 @@ class Window(QMainWindow):
                 text = "Player 2 moving"
         if self.game is not None:
             self.scene.clear()
-            self.scene.setBackgroundBrush(QBrush(QPixmap("background2.jpg")))
+            self.scene.setBackgroundBrush(QBrush(QPixmap(self.path_to_graphics+"background3top.jpg")))
             size = 30
             message = QGraphicsTextItem()
             message.setPlainText(text)
@@ -140,7 +140,7 @@ class Window(QMainWindow):
                     if block.get_player() == 1:
                         polyitem.setBrush(QBrush(QColor(255,255,255), Qt.SolidPattern))
                     else:
-                        polyitem.setBrush(QBrush(QColor(38,38,38), Qt.SolidPattern))
+                        polyitem.setBrush(QBrush(QColor(25,25,25), Qt.SolidPattern))
                         message.setDefaultTextColor(QColor(255,255,255))
                 else:
                     polyitem.setBrush(QBrush(QColor(14,41,75), Qt.SolidPattern))
@@ -161,6 +161,12 @@ class Window(QMainWindow):
                 i += 1
             self.view.update()
             self.view.show()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        background = QPixmap(self.path_to_graphics+"background3bot.jpg")
+        painter.drawPixmap(QPoint(0,600), background)
+
 
     def set_button(self, msg, action, x, y, visibility=True):
         btn1 = QPushButton(msg, self)
@@ -228,7 +234,7 @@ class Window(QMainWindow):
         self.update()
 
     def show_info(self):
-        self.info = infowindow.InfoWindow()
+        self.info = infowindow.InfoWindow(self.path_to_graphics+"info.jpg")
 
     def check_ip(self, ip):
         if ip == "localhost":
