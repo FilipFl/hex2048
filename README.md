@@ -22,7 +22,7 @@
 </p>
 
 ## Project Overview 🎉
-The project is a variation over a classic "2048" game, but this time based on hexagonal map. It's more advanced continuation of a university project. The game contains classic hot-seat game, possibility to play via LAN network and features replay mode and automatic scoreboard. Project is still in development with AI opponent planned along with visual upgrades.
+The project is a variation over a classic "2048" game, but this time based on hexagonal map. It's more advanced continuation of a university project. The game contains classic hot-seat game, possibility to play via LAN network and features replay mode and automatic scoreboard. In addition in the latest update I introduced simple AI bot to play with, in single player mode, feel free trying to beat it ;) Project is still in development with visual upgrades planned.
 ## Tech/framework used 🔧
 
 | Tech                                                    | Description                              |
