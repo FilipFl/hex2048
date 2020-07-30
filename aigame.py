@@ -118,7 +118,7 @@ class Game:
                     my_evaluation.append([self.evaluate_me(), i, j])
         random.shuffle(my_evaluation)
         my_best = my_evaluation.index(max(my_evaluation))
-        while self.board.move_blocks(self.player_playing, best_enemy_steps[my_evaluation[my_best][1]][1]):
+        while not self.board.move_blocks(self.player_playing, best_enemy_steps[my_evaluation[my_best][1]][1]):
             my_evaluation.pop(my_best)
             random.shuffle(my_evaluation)
             my_best = my_evaluation.index(max(my_evaluation))
