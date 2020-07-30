@@ -270,7 +270,6 @@ class Window(QMainWindow):
             pass
 
     def keyPressEvent(self, event):
-        pressed = event.key()
         if not self.processing:
             pressed = event.key()
             flag = False
