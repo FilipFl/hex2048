@@ -80,7 +80,7 @@ class Board:
         for column in self.map:
             for field in column:
                 block = field.get_block()
-                if block != None:
+                if block is not None:
                     if block.get_player() == player:
                         blocks.append(block)
         nothing_changed = False

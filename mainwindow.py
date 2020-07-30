@@ -1,6 +1,6 @@
-from PySide2.QtWidgets import QApplication, QPushButton, QMessageBox, QGraphicsScene, QGraphicsView,\
+from PySide2.QtWidgets import QApplication, QPushButton, QMessageBox, QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, \
     QMainWindow, QGraphicsPolygonItem, QGraphicsTextItem, QLineEdit
-from PySide2.QtGui import QBrush, QPen, QPolygonF, QFont
+from PySide2.QtGui import QBrush, QPen, QPolygonF, QFont, QPixmap, QColor
 from PySide2.QtCore import QPoint, Qt, QPointF, QThreadPool, QElapsedTimer
 import math
 import sys
@@ -12,6 +12,7 @@ import hotseatgame
 import servergame
 import infowindow
 import aigame
+from PySide2.QtCore import *
 
 
 class Window(QMainWindow):
@@ -21,13 +22,13 @@ class Window(QMainWindow):
         self.game = None
         self.startbutton = self.set_button("New Game", self.start, offsetX - 140, offsetY + 600)
         self.exitbutton = self.set_button("Quit", self.quit_app, offsetX - 140, offsetY + 680)
-        self.startserverbutton = self.set_button("Host game", self.start_server, offsetX + 60, offsetY + 600, False)
-        self.startclientbutton = self.set_button("Join game", self.start_client, offsetX + 60, offsetY + 640, False)
-        self.starthotseatbutton = self.set_button("Start hotseat \n game", self.start_hot_seat, offsetX + 60, offsetY + 680, False)
-        self.startaibutton = self.set_button("Start AI game", self.start_ai, offsetX + 60, offsetY + 720, False)
+        self.startserverbutton = self.set_button("Host game", self.start_server, offsetX, offsetY + 600, False)
+        self.startclientbutton = self.set_button("Join game", self.start_client, offsetX, offsetY + 640, False)
+        self.starthotseatbutton = self.set_button("Start hotseat \n game", self.start_hot_seat, offsetX, offsetY + 680, False)
+        self.startaibutton = self.set_button("Start AI game", self.start_ai, offsetX, offsetY + 720, False)
         self.infobutton = self.set_button("Info", self.show_info, offsetX - 140, offsetY+640)
         self.textbox = QLineEdit(self)
-        self.textbox.move(offsetX+170, offsetY + 645)
+        self.textbox.move(offsetX+110, offsetY + 645)
         self.textbox.resize(100, 20)
         self.textbox.setVisible(False)
         self.show()
@@ -48,6 +49,7 @@ class Window(QMainWindow):
         self.info = None
         self.timer = QElapsedTimer()
 
+
     def hex_corner(self, center, size, i):
         angle_deg = 60 * i
         angle_rad = math.pi / 180 * angle_deg
@@ -56,11 +58,20 @@ class Window(QMainWindow):
 
     def init_window(self):
         self.setWindowTitle("Hexagonal 2048 by FF")
-        self.setGeometry(100, 100, offsetX*2+60, 800)
-        self.view = QGraphicsView(self.scene,self)
-        self.view.setGeometry(0,0,offsetX*2+60,600)
-        self.setMinimumWidth(offsetX*2+60)
+        self.setGeometry(100, 100, offsetX*2, 800)
+        self.scene.setSceneRect(0,0,offsetX*2,600)
+        self.view = QGraphicsView(self.scene, self)
+        self.view.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.view.setGeometry(0,0,offsetX*2,600)
+        self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setMinimumWidth(offsetX*2)
         self.setMinimumHeight(800)
+        self.setMaximumHeight(800)
+        self.setMaximumWidth(offsetX*2)
+        background = QGraphicsPixmapItem("background2.jpg")
+        background.setRotation(90)
+        self.scene.setBackgroundBrush(QBrush(QPixmap("background2.jpg")))
         self.view.update()
         self.view.show()
         self.show()
@@ -90,9 +101,16 @@ class Window(QMainWindow):
                 text = "Player 2 moving"
         if self.game is not None:
             self.scene.clear()
+            self.scene.setBackgroundBrush(QBrush(QPixmap("background2.jpg")))
             size = 30
             message = QGraphicsTextItem()
             message.setPlainText(text)
+            font = QFont()
+            font.setBold(True)
+            font.setWeight(75)
+            font.setPixelSize(12)
+            message.setFont(font)
+            message.setDefaultTextColor(QColor(255, 255, 255))
             self.scene.addItem(message)
             score = self.game.get_score()
             text = "Player 1 score: {} \nPlayer 1 blocks: {}\n\nPlayer 2 score: {}\nPlayer 2 blocks: {}".format(
@@ -101,7 +119,10 @@ class Window(QMainWindow):
             message = QGraphicsTextItem()
             message.setPlainText(text)
             message.setPos(QPointF(0, offsetY+400))
+            message.setFont(font)
+            message.setDefaultTextColor(QColor(255, 255, 255))
             self.scene.addItem(message)
+            i = 0
             for element in middle:
                 block = self.game.get_block(element[1][0],element[1][1])
                 points = [self.hex_corner(element[0], size, 0),
@@ -117,11 +138,12 @@ class Window(QMainWindow):
                 if block is not None:
                     txt = block.value_to_string()
                     if block.get_player() == 1:
-                        polyitem.setBrush(QBrush(Qt.red, Qt.SolidPattern))
+                        polyitem.setBrush(QBrush(QColor(255,255,255), Qt.SolidPattern))
                     else:
-                        polyitem.setBrush(QBrush(Qt.green, Qt.SolidPattern))
+                        polyitem.setBrush(QBrush(QColor(38,38,38), Qt.SolidPattern))
+                        message.setDefaultTextColor(QColor(255,255,255))
                 else:
-                    polyitem.setBrush(QBrush(Qt.lightGray, Qt.SolidPattern))
+                    polyitem.setBrush(QBrush(QColor(14,41,75), Qt.SolidPattern))
                 message.setParentItem(polyitem)
                 message.setPlainText(txt)
                 font = QFont()
@@ -130,8 +152,13 @@ class Window(QMainWindow):
                 font.setPixelSize(12)
                 message.setFont(font)
                 message.setPos(QPointF(element[0][0]-(len(txt)*6), element[0][1]-12))
-                polyitem.setPen(QPen(Qt.black, 5, Qt.SolidLine))
+                polyitem.setPen(QPen(QColor(179,236,255), 5, Qt.SolidLine))
+                self.startpoly = poly
+                self.testpoly = polyitem
                 self.scene.addItem(polyitem)
+                if i == 1:
+                    self.destpoly = poly
+                i += 1
             self.view.update()
             self.view.show()
 
@@ -237,6 +264,7 @@ class Window(QMainWindow):
             pass
 
     def keyPressEvent(self, event):
+        pressed = event.key()
         if not self.processing:
             pressed = event.key()
             flag = False
@@ -245,29 +273,32 @@ class Window(QMainWindow):
                 if not self.replaying and self.game is not None:
                     flag2 = True
                     self.my_replay()
-            elif pressed == Qt.Key_B:
-                if self.game is not None:
-                    self.game.dump_state()
             elif pressed == Qt.Key_N:
                 flag2 = True
                 self.replay()
             elif pressed == Qt.Key_Q:
                 if self.game.move_qt(3):
+                    self.processing = True
                     flag = True
             elif pressed == Qt.Key_W:
                 if self.game.move_qt(4):
+                    self.processing = True
                     flag = True
             elif pressed == Qt.Key_E:
                 if self.game.move_qt(5):
+                    self.processing = True
                     flag = True
             elif pressed == Qt.Key_A:
                 if self.game.move_qt(2):
+                    self.processing = True
                     flag = True
             elif pressed == Qt.Key_S:
                 if self.game.move_qt(1):
+                    self.processing = True
                     flag = True
             elif pressed == Qt.Key_D:
                 if self.game.move_qt(6):
+                    self.processing = True
                     flag = True
             elif pressed == Qt.Key_U and self.gametype == "hotseat":
                 self.game.move_qt(9)
@@ -285,6 +316,8 @@ class Window(QMainWindow):
                 self.update_scene()
                 pass
             self.update_scene()
+            if self.processing and self.gametype == "hotseat":
+                self.processing = False
             if flag and not self.broken and self.gametype == "server":
                 self.processing = True
                 self.update_scene()
@@ -301,7 +334,6 @@ class Window(QMainWindow):
                 self.threadpool.start(worker)
             if flag and self.gametype == "ai":
                 self.update_scene()
-                self.processing = True
                 worker = Worker(self.lets_wait)
                 self.worker = worker
                 worker.signals.finished.connect(self.update_ai)

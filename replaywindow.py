@@ -22,7 +22,7 @@ class Replay(QWidget):
     def __init__(self):
         super().__init__()
         self.game = ReplayGame()
-        self.setGeometry(300,300,600,600)
+        self.setGeometry(300,300,520,500)
         self.setWindowTitle("Replay")
         self.update()
         self.show()
@@ -43,18 +43,18 @@ class Replay(QWidget):
             painter.setPen(QPen(Qt.black, 5, Qt.SolidLine))
             size = 30
             for element in middle:
-                painter.setPen(QPen(Qt.black, 5, Qt.SolidLine))
+                painter.setPen(QPen(QColor(179,236,255), 5, Qt.SolidLine))
                 block = self.game.get_block(element[1][0],element[1][1])
                 txt = ""
                 if block is not None:
                     if block.get_player()==1:
-                        painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
+                        painter.setBrush(QBrush(QColor(255,255,255), Qt.SolidPattern))
                         txt = block.value_to_string()
                     else:
-                        painter.setBrush(QBrush(Qt.green, Qt.SolidPattern))
+                        painter.setBrush(QBrush(QColor(38,38,38), Qt.SolidPattern))
                         txt = block.value_to_string()
                 else:
-                    painter.setBrush(QBrush(Qt.black, Qt.NoBrush))
+                    painter.setBrush(QBrush(QColor(14,41,75), Qt.SolidPattern))
                 points = [self.hex_corner(element[0],size,0),
                     self.hex_corner(element[0],size,1),
                     self.hex_corner(element[0],size,2),
@@ -64,5 +64,8 @@ class Replay(QWidget):
                 poly = QPolygon(points)
                 painter.drawPolygon(poly)
                 if txt != "":
-                    painter.setPen(QPen(Qt.black, 10, Qt.SolidLine))
+                    if block.get_player() == 1:
+                        painter.setPen(QPen(Qt.black, 10, Qt.SolidLine))
+                    else:
+                        painter.setPen(QPen(Qt.white, 10, Qt.SolidLine))
                     painter.drawText(QRectF(element[0][0]-30, element[0][1]-10,60,20),Qt.AlignHCenter|Qt.AlignVCenter, txt)
