@@ -85,23 +85,23 @@ class Board:
                         blocks.append(block)
         nothing_changed = False
         while not nothing_changed:
-            if dir == 0:
+            if dir == 1:
                 blocks.sort(key=lambda x: x.get_y(), reverse=True)
-            if dir == 3:
+            if dir == 4:
                 blocks.sort(key=lambda x: x.get_y())
+            if dir == 3:
+                blocks.sort(key=lambda x: x.get_x())
+            if dir == 6:
+                blocks.sort(key=lambda x: x.get_x(), reverse=True)
             if dir == 2:
                 blocks.sort(key=lambda x: x.get_x())
             if dir == 5:
-                blocks.sort(key=lambda x: x.get_x(), reverse=True)
-            if dir == 1:
-                blocks.sort(key=lambda x: x.get_x())
-            if dir == 4:
                 blocks.sort(key=lambda x: x.get_x(), reverse=True)
             nothing_changed = True
             for item in blocks:
                 iterations += 1
                 old = item.get_coords()
-                possible, new_coords = item.get_address_to_move(dir)
+                possible, new_coords = item.get_address_to_move(dir-1)
                 if possible:
                     existing = self.get_field(new_coords[0], new_coords[1]).get_block()
                     if existing is not None:

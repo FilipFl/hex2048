@@ -30,50 +30,14 @@ class Game:
             self.player_playing = 1
 
     def move_qt(self, click):
-        if click == 1 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 0):
+        if self.player_playing == 1:
+            if self.board.move_blocks(self.player_playing, click):
                 self.change_player()
                 self.board.create_block(self.player_playing)
                 self.replay.append(self.create_state())
                 self.check_all()
                 return True
-        elif click == 2 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 1):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 3 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 2):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 4 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 3):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 5 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 4):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 6 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 5):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        else:
-            return False
+        return False
 
     def move_ai(self):
         direction = self.predict_and_find()

@@ -23,98 +23,27 @@ class Game:
         self.done = True
 
     def change_player(self):
-        if self.player_playing ==1:
+        if self.player_playing == 1:
             self.player_playing = 2
         else:
             self.player_playing = 1
 
     def move_qt(self, click):
-        if click == 1 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 0):
+        if self.player_playing == 1 and click <= 6:
+            if self.board.move_blocks(self.player_playing, click):
                 self.change_player()
                 self.board.create_block(self.player_playing)
                 self.replay.append(self.create_state())
                 self.check_all()
                 return True
-        elif click == 2 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 1):
+        elif self.player_playing == 2 and click > 6:
+            if self.board.move_blocks(self.player_playing, click-6):
                 self.change_player()
                 self.board.create_block(self.player_playing)
                 self.replay.append(self.create_state())
                 self.check_all()
                 return True
-        elif click == 3 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 2):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 4 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 3):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 5 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 4):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 6 and self.player_playing == 1:
-            if self.board.move_blocks(self.player_playing, 5):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 7 and self.player_playing == 2:
-            if self.board.move_blocks(self.player_playing, 0):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 8 and self.player_playing == 2:
-            if self.board.move_blocks(self.player_playing, 1):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 9 and self.player_playing == 2:
-            if self.board.move_blocks(self.player_playing, 2):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 10 and self.player_playing == 2:
-            if self.board.move_blocks(self.player_playing, 3):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 11 and self.player_playing == 2:
-            if self.board.move_blocks(self.player_playing, 4):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        elif click == 12 and self.player_playing == 2:
-            if self.board.move_blocks(self.player_playing, 5):
-                self.change_player()
-                self.board.create_block(self.player_playing)
-                self.replay.append(self.create_state())
-                self.check_all()
-                return True
-        else:
-            return False
+        return False
 
     def create_state(self):
         game_state = []

@@ -51,36 +51,10 @@ class Game:
                     self.serwer.send("endgame")
 
     def move_qt(self, click):
-        if click == 1:
-            if self.board.move_blocks(self.playing_as, 0):
-                self.board.create_block(2)
-                self.replay.append(self.create_state())
-                return True
-        elif click == 2:
-            if self.board.move_blocks(self.playing_as, 1):
-                self.board.create_block(2)
-                self.replay.append(self.create_state())
-                return True
-        elif click == 3:
-            if self.board.move_blocks(self.playing_as, 2):
-                self.board.create_block(2)
-                self.replay.append(self.create_state())
-                return True
-        elif click == 4:
-            if self.board.move_blocks(self.playing_as, 3):
-                self.board.create_block(2)
-                self.replay.append(self.create_state())
-                return True
-        elif click == 5:
-            if self.board.move_blocks(self.playing_as, 4):
-                self.board.create_block(2)
-                self.replay.append(self.create_state())
-                return True
-        elif click == 6:
-            if self.board.move_blocks(self.playing_as, 5):
-                self.board.create_block(2)
-                self.replay.append(self.create_state())
-                return True
+        if self.board.move_blocks(self.playing_as, click):
+            self.board.create_block(2)
+            self.replay.append(self.create_state())
+            return True
         else:
             return False
 
